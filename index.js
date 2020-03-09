@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const http = require('request-promise');
 
 const logger = require('./logger');
+const { basicAuthorizationHeader, encodeCredentials } = require('./helpers');
+const credentials = require('./credentials.json');
 const {
 	port,
 	jenkins: { host, projectName, buildName }
@@ -20,7 +22,10 @@ app.post('/deploy', (request, response) => {
 		method: 'POST',
 		json: true,
 		uri: buildUrl,
-		qs: query
+		qs: query,
+		headers: {
+			authorization: basicAuthorizationHeader(encodeCredentials(credentials[user], user))
+		}
 	};
 
 	http(options).then(res => {
