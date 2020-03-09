@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+    server:
+        build: .
+        user: 'node'
+        command: npm run start
+        ports:
+            - '${PORT}:${PORT}'
+        restart: always
+        env_file:
+            - .env
