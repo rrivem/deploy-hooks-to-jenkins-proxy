@@ -15,23 +15,30 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.post('/deploy', (request, response) => {
-	logger.info('deploy hook %j', { params: request.body });
-	const { user, ...query } = request.body;
-	const options = {
-		method: 'POST',
-		json: true,
-		uri: buildUrl,
-		qs: query,
-		headers: {
-			authorization: basicAuthorizationHeader(encodeCredentials(credentials[user], user))
-		}
-	};
+app.post('/deploy', async (request, response) => {
+	try {
+		logger.info('deploy hook %j', request.body);
+		const { user, ...query } = request.body;
+		const options = {
+			method: 'POST',
+			json: true,
+			uri: buildUrl,
+			qs: query,
+			headers: {
+				authorization: basicAuthorizationHeader(encodeCredentials(credentials[user], user))
+			}
+		};
+		logger.info('Calling Jenkins with %j', options);
 
-	http(options).then(res => {
-		response.send(res);
-		response.end();
-	});
+		const res = await http(options);
+		response.send(res).end();
+	} catch (err) {
+		logger.error('Error processing deploy %j', err);
+		response
+			.status(err.status)
+			.send(err.message)
+			.end();
+	}
 });
 
 app.listen(port, () => {
