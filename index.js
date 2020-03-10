@@ -15,7 +15,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.post('/deploy', async (request, response) => {
+app.use('/deploy', async (request, response) => {
 	try {
 		logger.info('deploy hook %j', request.body);
 		const { user, ...query } = request.body;
