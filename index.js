@@ -35,7 +35,7 @@ app.post('/deploy', async (request, response) => {
 	} catch (err) {
 		logger.error('Error processing deploy %j', err);
 		response
-			.status(err.status)
+			.status(err.statusCode || 500)
 			.send(err.message)
 			.end();
 	}
